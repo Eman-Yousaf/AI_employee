@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "email": {
+      "name": "Email MCP",
+      "command": "python",
+      "args": [
+        "C:\\Users\\T14\\Documents\\GitHub\\AI_employee\\.claude\\skills\\email-mcp\\servers\\email_mcp.py"
+      ],
+      "env": {
+        "GMAIL_CREDENTIALS": "C:\\Users\\T14\\Documents\\GitHub\\AI_employee\\config\\credentials.json",
+        "GMAIL_TOKEN": "C:\\Users\\T14\\Documents\\GitHub\\AI_employee\\config\\token.json",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

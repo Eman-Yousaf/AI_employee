@@ -1,0 +1,64 @@
+[
+  {
+    "timestamp": "2026-03-29T23:46:40.745796",
+    "file": "email.md",
+    "action": "send_email",
+    "success": false,
+    "metadata": {
+      "action": "send_email",
+      "to": "redacted@example.com",
+      "subject": "Test from Silver Tier",
+      "priority": "medium"
+    }
+  },
+  {
+    "timestamp": "2026-03-29T23:46:40.789349",
+    "file": "PLAN_EMAIL_20260326_200513_20260326_210513.md",
+    "action": "plan",
+    "success": false,
+    "metadata": {
+      "type": "plan",
+      "source_item": "EMAIL_20260326_200513.md",
+      "item_type": "email",
+      "priority": "medium",
+      "status": "active",
+      "created": "2026-03-26T21:05:13.468673"
+    }
+  },
+  {
+    "timestamp": "2026-03-29T23:46:40.824216",
+    "file": "TEST_20260329_191210.md",
+    "action": "test",
+    "success": false,
+    "metadata": {
+      "action": "test",
+      "created": "2026-03-29"
+    }
+  },
+  {
+    "timestamp": "2026-03-30T00:50:54.666101",
+    "file": "EMAIL_SEND_NOW_20260330_ 05050.md",
+    "action": "send_email",
+    "success": false,
+    "metadata": {
+      "action": "send_email",
+      "to": "redacted@example.com",
+      "subject": "Hello from AI Employee",
+      "is_html": "false",
+      "priority": "high"
+    }
+  },
+  {
+    "timestamp": "2026-03-30T00:53:28.767085",
+    "file": "EMAIL_SEND_NOW_20260330_ 05325.md",
+    "action": "send_email",
+    "success": false,
+    "metadata": {
+      "action": "send_email",
+      "to": "redacted@example.com",
+      "subject": "Hello from AI Employee",
+      "is_html": "false",
+      "priority": "high"
+    }
+  }
+]

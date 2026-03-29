@@ -1,0 +1,51 @@
+{
+  "name": "AI Employee",
+  "version": "1.0.0",
+  "mcpServers": {
+    "email": {
+      "name": "email",
+      "command": "python",
+      "args": [
+        ".claude/skills/email-mcp/servers/email_mcp.py"
+      ],
+      "env": {
+        "GMAIL_TOKEN": "config/token.json",
+        "DRY_RUN": "false"
+      },
+      "description": "Gmail integration for sending and reading emails"
+    }
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/skills/reasoning-loop/scripts/ralph_hook.py --vault-path ./vault"
+          }
+        ]
+      }
+    ]
+  },
+  "skills": {
+    "autoLoad": true,
+    "paths": [
+      ".claude/skills/gmail-watcher",
+      ".claude/skills/whatsapp-watcher",
+      ".claude/skills/linkedin-poster",
+      ".claude/skills/plan-creator",
+      ".claude/skills/approval-workflow",
+      ".claude/skills/cron-scheduler",
+      ".claude/skills/reasoning-loop"
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write"
+    ]
+  }
+}
