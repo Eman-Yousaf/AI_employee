@@ -46,7 +46,7 @@ python orchestrator.py --vault-path ./vault --run-watchers
 python .claude/skills/linkedin-poster/scripts/linkedin_poster.py --vault-path ./vault --generate
 ```
 
-## Silver Tier Components
+## Components
 - ✅ Gmail Watcher (monitors inbox)
 - ✅ WhatsApp Watcher (monitors messages)
 - ✅ LinkedIn Poster (with approval)

@@ -1,4 +1,4 @@
-# AI Employee - Silver Tier
+# AI Employee
 ## Complete Setup Guide for Beginners
 
 ---

@@ -1,4 +1,4 @@
-# AI Employee - Silver Tier
+# AI Employee
 
 An automated AI employee that handles your business communications: emails, WhatsApp messages, and LinkedIn posts - all controlled from Obsidian.
 

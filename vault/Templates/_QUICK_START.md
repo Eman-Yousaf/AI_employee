@@ -175,11 +175,11 @@ Try this test:
 ---
 action: send_email
 to: "your-own-email@example.com"
-subject: "Test from Silver Tier"
+subject: "Test message"
 priority: low
 ---
 
-This is a test email from my AI Employee Silver Tier system.
+This is a test email from my AI Employee system.
 
 If you received this, everything is working!
 ```

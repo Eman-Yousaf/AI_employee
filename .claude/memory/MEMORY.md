@@ -1,6 +1,6 @@
 # Memory Index
 
-## Skills for Silver Tier AI Employee
+## Skills
 
 - [Gmail Watcher](skills/gmail-watcher/SKILL.md) — Monitors Gmail inbox and creates action files in /Needs_Action
 - [WhatsApp Watcher](skills/whatsapp-watcher/SKILL.md) — Monitors WhatsApp Web for urgent messages via Playwright
@@ -14,10 +14,9 @@
 
 ## Project Documentation
 
-- [Silver Tier Implementation Plan](SILVER_TIER_PLAN.md) — Complete Silver Tier roadmap with phases and checklist
 
 ## Quick Links
 
-- Silver Tier Skills Created: 8 total
+- Skills created: 8 total
 - Next Phase: Implement scripts for each skill
 - Priority: Gmail Watcher → Email MCP → Plan Creator → Approval Workflow

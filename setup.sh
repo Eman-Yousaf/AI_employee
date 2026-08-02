@@ -2,7 +2,7 @@
 # setup.sh - Setup script for AI Employee
 
 echo "=========================================="
-echo "AI Employee - Silver Tier Setup"
+echo "AI Employee Setup"
 echo "=========================================="
 echo ""
 

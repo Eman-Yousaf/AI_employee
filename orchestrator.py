@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Orchestrator - Complete Silver Tier Integration."""
+"""Orchestrator - Integration layer."""
 
 import os
 import sys
@@ -22,8 +22,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class SilverTierOrchestrator:
-    """Complete Silver Tier orchestration."""
+class Orchestrator:
+    """End-to-end orchestration."""
 
     def __init__(self, vault_path: str):
         self.vault_path = Path(vault_path)
@@ -115,7 +115,7 @@ python orchestrator.py --vault-path ./vault --run-watchers
 python .claude/skills/linkedin-poster/scripts/linkedin_poster.py --vault-path ./vault --generate
 ```
 
-## Silver Tier Components
+## Components
 - ✅ Gmail Watcher (monitors inbox)
 - ✅ WhatsApp Watcher (monitors messages)
 - ✅ LinkedIn Poster (with approval)
@@ -324,7 +324,7 @@ python .claude/skills/linkedin-poster/scripts/linkedin_poster.py --vault-path ./
     def run_continuous(self, interval: int = 300):
         """Run orchestrator continuously."""
         logger.info("=" * 60)
-        logger.info("Silver Tier Orchestrator - Continuous Mode")
+        logger.info("Orchestrator - Continuous Mode")
         logger.info(f"Vault: {self.vault_path}")
         logger.info(f"Check interval: {interval}s")
         logger.info("=" * 60)
@@ -343,7 +343,7 @@ python .claude/skills/linkedin-poster/scripts/linkedin_poster.py --vault-path ./
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description='Silver Tier Orchestrator')
+    parser = argparse.ArgumentParser(description='Orchestrator')
     parser.add_argument('--vault-path', default='./vault', help='Path to vault')
     parser.add_argument('--continuous', action='store_true', help='Run continuously')
     parser.add_argument('--interval', type=int, default=300, help='Check interval (seconds)')
@@ -353,7 +353,7 @@ def main():
 
     args = parser.parse_args()
 
-    orchestrator = SilverTierOrchestrator(vault_path=args.vault_path)
+    orchestrator = Orchestrator(vault_path=args.vault_path)
 
     if args.dashboard:
         orchestrator.update_dashboard()

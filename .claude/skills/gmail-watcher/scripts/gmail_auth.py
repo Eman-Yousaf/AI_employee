@@ -201,7 +201,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 70)
-    print("Gmail API Authentication - Silver Tier")
+    print("Gmail API Authentication")
     print("=" * 70)
 
     creds_path = Path(args.credentials)

@@ -1,6 +1,6 @@
 @echo off
 echo ============================================
-echo GMAIL AUTHENTICATION - SILVER TIER
+echo GMAIL AUTHENTICATION
 echo ============================================
 echo.
 echo Choose authentication method:
