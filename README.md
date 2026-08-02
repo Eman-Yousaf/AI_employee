@@ -16,8 +16,8 @@ An automated AI employee that handles your business communications: emails, What
 ### 1. Install Dependencies
 
 ```bash
-pip install playwright google-api-python-client
-git playwrig ht install chromium
+pip install -r requirements.txt
+playwright install chromium
 ```
 
 ### 2. Configure Services
