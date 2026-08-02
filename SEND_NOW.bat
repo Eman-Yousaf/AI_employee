@@ -2,86 +2,64 @@
 chcp 65001 > nul
 cls
 echo ============================================
-echo    QUICK SEND - CHOOSE OPTION
+echo    QUICK SEND - TEST HARNESS
 echo ============================================
 echo.
-echo 1. Send Email to redacted@example.com
-echo 2. Send WhatsApp to CONTACT_NAME
-echo 3. Post to LinkedIn
-echo 4. Send ALL at once
+echo WARNING: this script writes straight into vault\Approved\ and then runs
+echo the executor, so it deliberately SKIPS the approval step. Anything sent
+echo from here goes out without review. It exists only to confirm that an
+echo integration is wired up. Use the Pending_Approval flow for real work.
 echo.
-set /p choice="Enter 1, 2, 3, or 4: "
+echo 1. Send a test email
+echo 2. Send a test WhatsApp message
+echo 3. Post a test item to LinkedIn
+echo.
+set /p choice="Enter 1, 2, or 3: "
 
 if "%choice%"=="1" goto email
 if "%choice%"=="2" goto whatsapp
 if "%choice%"=="3" goto linkedin
-if "%choice%"=="4" goto all
 
 echo Invalid choice
 goto end
 
 :email
 echo.
-echo Sending email...
+set /p recipient="Recipient email address: "
+if "%recipient%"=="" (echo No recipient given. & goto end)
+echo Sending test email to %recipient% ...
 (
 echo ---
 echo action: send_email
-echo to: "redacted@example.com"
-echo subject: "Hello from AI Employee"
+echo to: "%recipient%"
+echo subject: "Test message from AI Employee"
 echo priority: high
 echo ---
 echo.
-echo This is a test email sent automatically from your AI Employee system.
-) > "vault\Approved\EMAIL_NOW_%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%.md"
+echo This is a test email sent from the AI Employee setup harness.
+) > "vault\Approved\EMAIL_TEST_%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%.md"
 
 python .claude\skills\approval-workflow\scripts\monitor_approved.py --vault-path vault --once
-echo [DONE] Email sent!
+echo [DONE] Test email dispatched.
 goto end
 
 :whatsapp
 echo.
-echo Sending WhatsApp...
-python .claude\skills\whatsapp-watcher\scripts\whatsapp_sender.py --chat "CONTACT_NAME" --message "Hello! This is a test message from AI Employee system." --session-path "./whatsapp_session"
-echo [DONE] WhatsApp sent!
+set /p contact="WhatsApp contact name (as shown in WhatsApp Web): "
+if "%contact%"=="" (echo No contact given. & goto end)
+echo Sending test WhatsApp message to %contact% ...
+python .claude\skills\whatsapp-watcher\scripts\whatsapp_sender.py --chat "%contact%" --message "Test message from the AI Employee setup harness." --session-path "./whatsapp_session"
+echo [DONE] Test WhatsApp message dispatched.
 goto end
 
 :linkedin
 echo.
-echo Posting to LinkedIn...
-python .claude\skills\linkedin-poster\scripts\linkedin_poster.py --vault-path vault --test --topic "AI Automation"
-echo [DONE] LinkedIn posted!
+set /p topic="Topic for the test post: "
+if "%topic%"=="" set topic=AI Automation
+echo Generating a test LinkedIn post about "%topic%" ...
+python .claude\skills\linkedin-poster\scripts\linkedin_poster.py --vault-path vault --test --topic "%topic%"
+echo [DONE] Test LinkedIn post dispatched.
 goto end
-
-:all
-echo.
-echo Sending Email...
-(
-echo ---
-echo action: send_email
-echo to: "redacted@example.com"
-echo subject: "Hello from AI Employee"
-echo priority: high
-echo ---
-echo.
-echo This is a test email sent automatically from your AI Employee system.
-) > "vault\Approved\EMAIL_NOW_%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%.md"
-python .claude\skills\approval-workflow\scripts\monitor_approved.py --vault-path vault --once
-echo [DONE] Email sent!
-echo.
-
-echo Sending WhatsApp...
-python .claude\skills\whatsapp-watcher\scripts\whatsapp_sender.py --chat "CONTACT_NAME" --message "Hello! This is a test message from AI Employee system." --session-path "./whatsapp_session"
-echo [DONE] WhatsApp sent!
-echo.
-
-echo Posting to LinkedIn...
-python .claude\skills\linkedin-poster\scripts\linkedin_poster.py --vault-path vault --test --topic "AI Automation"
-echo [DONE] LinkedIn posted!
-echo.
-
-echo ============================================
-echo ALL MESSAGES SENT!
-echo ============================================
 
 :end
 echo.

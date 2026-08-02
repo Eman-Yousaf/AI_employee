@@ -1,189 +1,117 @@
 # AI Employee
 
-An automated AI employee that handles your business communications: emails, WhatsApp messages, and LinkedIn posts - all controlled from Obsidian.
+An agentic assistant that watches Gmail, WhatsApp and LinkedIn, drafts the work those
+messages imply, and routes anything consequential through a human before it leaves your
+machine. Built from nine [Claude Code](https://claude.com/claude-code) skills over an
+[Obsidian](https://obsidian.md) vault. Local-first: no server, no database, no hosted
+state.
 
-## Features
+## Drafting and sending are separate paths
 
-- **📧 Email Automation** - Send emails via Gmail with approval workflow
-- **💬 WhatsApp Automation** - Send WhatsApp messages automatically
-- **💼 LinkedIn Automation** - Generate and post LinkedIn content
-- **✅ Human-in-the-Loop** - All actions require your approval
-- **📝 Obsidian Integration** - Control everything from your Obsidian vault
-- **🤖 Auto-Processing** - Run continuously in the background
+The component that can actually send — `approval-workflow/scripts/monitor_approved.py` —
+reads from exactly one directory, `vault/Approved/`. The watchers and generators that the
+model drives write to exactly one other, `vault/Pending_Approval/`. Nothing in the
+drafting path can reach the executor's input:
 
-## Quick Start
+```
+watchers/generators ──► Pending_Approval/ ──► [ you move the file ] ──► Approved/ ──► executor ──► Done/
+                                                                                          │
+                                                                                          └─► Logs/approvals.json
+```
 
-### 1. Install Dependencies
+An approval request is a Markdown file with the action in its frontmatter, so what you are
+approving is legible before you approve it — recipient, amount, and body are all on screen
+as plain text:
+
+```markdown
+---
+type: approval_request
+action: payment
+amount: 1500.00
+currency: USD
+recipient: Client A
+recipient_account: XXXX1234
+---
+```
+
+Approving is dragging that file into `Approved/`. Rejecting is dragging it into
+`Rejected/`, or deleting it. Every executed action is appended to `Logs/approvals.json`
+and the file lands in `Done/`, so the vault is its own audit trail.
+
+To be precise about what this does and does not guarantee: it is a separation of paths,
+not a sandbox. An agent with write access to the vault could move a file into `Approved/`
+itself. The boundary holds because the executor's input directory is kept out of the
+drafting workflow, not because the filesystem forbids it — worth knowing if you extend
+this to actions where the failure is expensive.
+
+## Skills
+
+| Skill | What it does |
+|---|---|
+| `approval-workflow` | Creates approval requests; monitors `Approved/` and executes email, WhatsApp, payment and social actions |
+| `gmail-watcher` | Polls Gmail over IMAP and the API for unread/important mail, writes action files into the vault |
+| `whatsapp-watcher` | Watches WhatsApp Web via Playwright for messages matching keywords |
+| `linkedin-poster` | Generates post drafts and publishes approved ones through a persistent browser session |
+| `email-mcp` | MCP server exposing send/draft/read/search over Gmail |
+| `plan-creator` | Turns items in `Needs_Action/` into structured plans with steps and dependencies |
+| `reasoning-loop` | Persistence pattern that keeps multi-step tasks running to completion |
+| `cron-scheduler` | Recurring jobs — daily briefings, periodic watcher runs |
+| `browsing-with-playwright` | Shared browser automation used by the WhatsApp and LinkedIn skills |
+
+`orchestrator.py` ties them together: `run_full_cycle()` runs the watchers, plan creator
+and approval monitor once; `run_continuous(interval=300)` loops them.
+
+## Setup
 
 ```bash
 pip install -r requirements.txt
 playwright install chromium
 ```
 
-### 2. Configure Services
+**Gmail** — create an OAuth client in Google Cloud Console, download the JSON to
+`config/credentials.json` (`config/credentials.json.template` shows the shape), then run
+`Gmail_Auth.bat` to complete the consent flow and write `config/token.json`.
 
-#### Gmail (for email sending)
-1. Get credentials.json from Google Cloud Console
-2. Put in `config/` folder
-3. Run `Gmail_Auth.bat`
+**WhatsApp** — run `WhatsApp_Setup.bat` and scan the QR code. The session persists.
 
-#### WhatsApp
-1. Run `WhatsApp_Setup.bat`
-2. Scan QR code with your phone
+**LinkedIn** — the first post opens a real browser window (`headless=False`). Log in when
+it appears; the session is stored in `vault/.linkedin_session` and reused after that.
 
-#### LinkedIn
-1. Run `Test_LinkedIn_Only.bat`
-2. Login in browser
+Then `Start_Auto_Processing.bat` to run continuously, or `Execute_Approved.bat` to process
+the approval queue once.
 
-### 3. Start Automation
+| Script | Purpose |
+|---|---|
+| `Start_Auto_Processing.bat` | Run the full cycle continuously |
+| `Execute_Approved.bat` | Process the approval queue once |
+| `SEND_NOW.bat` | Integration test harness — **writes straight to `Approved/` and skips review** |
+| `Gmail_Auth.bat` | Gmail OAuth consent flow |
+| `WhatsApp_Setup.bat` | WhatsApp Web QR pairing |
+| `Test_All_Setup.bat` | Check every configured integration |
 
-Double-click: `Start_Auto_Processing.bat`
-
-Leave this running - it processes approvals automatically.
-
-### 4. Use in Obsidian
-
-1. Open the `vault` folder in Obsidian
-2. Create files in `Pending_Approval/`
-3. Drag to `Approved/` to execute
-4. Check `Done/` for confirmation
-
-## How It Works
+## Vault layout
 
 ```
-Pending_Approval/ → Approved/ → [System Executes] → Done/
+vault/
+├── Needs_Action/      # what the watchers found
+├── Pending_Approval/  # drafted, awaiting you
+├── Approved/          # you moved it here; the executor picks it up
+├── Rejected/          # you moved it here instead
+├── Done/              # executed, with outcome
+├── Templates/         # frontmatter templates for each action type
+└── Logs/              # approvals.json audit trail
 ```
 
-1. **Create** a file with email/message details
-2. **Review** and approve (drag to Approved/)
-3. **System sends** automatically
-4. **File moves** to Done/
+Only `Templates/`, `Company_Handbook.md` and `Business_Goals.md` are in version control.
+Every other folder above is runtime state — real mail, real contacts — and is gitignored;
+the scripts create the directories on first run. The frontmatter `action:` field
+(`send_email`, `send_whatsapp`, `social_post`) is what routes an approved file to the
+right executor.
 
-## File Structure
+The one exception to the separation above is `SEND_NOW.bat`, which writes directly into
+`Approved/` to test that an integration works. It says so when you run it.
 
-```
-AI_employee/
-│
-├── Start_Auto_Processing.bat  # Main automation runner
-├── orchestrator.py            # Core automation script
-│
-├── vault/                     # Your Obsidian vault
-│   ├── Pending_Approval/      # Draft items
-│   ├── Approved/              # Ready to execute
-│   ├── Done/                  # Completed items
-│   └── Templates/             # Copy-paste templates
-│
-├── .claude/skills/            # Automation modules
-│   ├── approval-workflow/     # Execute approved actions
-│   ├── email-mcp/            # Email MCP server
-│   ├── gmail-watcher/        # Gmail monitoring
-│   ├── linkedin-poster/      # LinkedIn automation
-│   ├── plan-creator/         # Plan generation
-│   └── whatsapp-watcher/     # WhatsApp automation
-│
-└── config/                    # Your credentials (not shared)
-    ├── credentials.json       # Get from Google Cloud
-    └── token.json            # Auto-generated
-```
+## Credentials
 
-## Templates
-
-### Email Template
-```markdown
----
-action: send_email
-to: "recipient@example.com"
-subject: "Subject"
-priority: medium
----
-
-Your email body here.
-```
-
-### WhatsApp Template
-```markdown
----
-action: send_whatsapp
-chat_name: "Contact Name"
-priority: medium
----
-
-Your message here.
-```
-
-### LinkedIn Template
-```markdown
----
-action: social_post
-platform: linkedin
----
-
-Your post content here.
-
-#hashtag1 #hashtag2
-```
-
-## Available Batch Files
-
-| File | Purpose |
-|------|---------|
-| `Start_Auto_Processing.bat` | Run automation continuously |
-| `Execute_Approved.bat` | Process approved items once |
-| `Gmail_Auth.bat` | Gmail setup |
-| `WhatsApp_Setup.bat` | WhatsApp setup |
-| `Test_All_Setup.bat` | Test all configurations |
-| `Send_All_Now.bat` | Send test messages |
-| `CHECK_BEFORE_GITHUB.bat` | Verify privacy before sharing |
-
-## Security & Privacy
-
-- **Human approval required** - Nothing sends without your approval
-- **Audit trail** - All actions logged in `Done/` folder
-- **Local processing** - Your data stays on your computer
-- **Credential protection** - See GITHUB_GUIDE.md for safe sharing
-
-## Requirements
-
-- Windows 10/11
-- Python 3.10+
-- Obsidian (optional but recommended)
-- Gmail account
-- WhatsApp on phone
-- LinkedIn account
-
-## Setup Guides
-
-- **First Time Setup:** See `START_HERE.md`
-- **Detailed Guide:** See `HOW_TO_USE.md`
-- **GitHub Sharing:** See `GITHUB_GUIDE.md`
-- **Testing:** See `TESTING_GUIDE.md`
-
-## Troubleshooting
-
-### "Nothing sending"
-- Is `Start_Auto_Processing.bat` running?
-- Are files in `Approved/` folder?
-
-### "Email not working"
-- Run `Test_Email_Only.bat`
-- Check `config/credentials.json` exists
-
-### "WhatsApp not working"
-- Run `Test_WhatsApp_Only.bat`
-- Check if logged in to WhatsApp Web
-
-### "LinkedIn not working"
-- Run `Test_LinkedIn_Only.bat`
-- Check if logged in to LinkedIn
-
-## License
-
-MIT - Feel free to use and modify!
-
-## Credits
-
-Built with:
-- Python
-- Playwright
-- Gmail API
-- Obsidian
+`config/` is gitignored apart from the template. Supply your own OAuth client and app
+password; nothing in this repo ships working credentials, and none should be committed.

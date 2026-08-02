@@ -17,7 +17,20 @@ vault/.whatsapp_processed.json
 vault/.ralph_iterations.json
 
 # Personal Data - NEVER COMMIT
+# The vault's runtime folders hold real captured mail and messages, including
+# other people's names and addresses. Only Templates/ and the config notes
+# below are part of the project; everything the system produces stays local.
+vault/Inbox/
+vault/Needs_Action/
+vault/In_Progress/
+vault/Pending_Approval/
+vault/Approved/
+vault/Rejected/
+vault/Done/
+vault/Plans/
 vault/Logs/*
+vault/*.canvas
+vault/*.base
 *.log
 orchestrator.log
 
