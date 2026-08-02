@@ -27,10 +27,13 @@ vault/Pending_Approval/
 vault/Approved/
 vault/Rejected/
 vault/Done/
+vault/Failed/
 vault/Plans/
 vault/Logs/*
 vault/*.canvas
 vault/*.base
+vault/Untitled*.md
+vault/20??-??-??.md
 *.log
 orchestrator.log
 
